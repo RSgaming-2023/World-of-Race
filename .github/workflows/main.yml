@@ -1,0 +1,28 @@
+name: Hathora Deploy
+on:
+  push:
+    branches:
+      - main
+jobs:
+  server:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.22.4'
+      - run: go install github.com/hathora/ci/hathora@latest
+      - run: |
+		      hathora deploy \
+		        --file $FILE_OR_DIRECTORY \
+		        --build-tag $BUILD_TAG \
+		        --rooms-per-process $ROOMS_PER_PROCESS \
+		        --container-port $CONTAINER_PORT \
+		        --transport-type $TRANSPORT_TYPE \
+		        --requested-memory-mb $MEMORY_MB \
+		        --requested-cpu $CPU \
+		        --env ENV1=$ENV1_VALUE \
+		        --env ENV2=$ENV2_VALUE \
+		        --idle-timeout-enabled \
+		        --app-id $APP_ID \
+		        --token ${{ secrets.HATHORA_TOKEN }}
